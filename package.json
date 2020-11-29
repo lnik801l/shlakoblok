@@ -1,0 +1,19 @@
+{
+  "name": "shlakoblok",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lnik801l/shlakoblok.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lnik801l/shlakoblok/issues"
+  },
+  "homepage": "https://github.com/lnik801l/shlakoblok#readme"
+}
