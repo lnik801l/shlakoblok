@@ -1,7 +1,6 @@
 import request from 'request';
 import { JSDOM } from 'jsdom';
 import main from './main';
-import proxyList from './proxyList';
 import cBypass from './cBypass';
 
 interface stagedQuery {
@@ -18,11 +17,13 @@ interface stagedResult {
 
 export default class query {
     private id = 2504061;
-    private uri = 'https://russiantastes.ru/nominees/2504061';
-    private uriPlus = '/local/ajax/vote2';
+    private uri = 'https://russiantastes.ru';
+    private uriPlus = '/nominees/2504061'
+    private uriPlusPlus = '/local/ajax/vote2/';
     private proxy: string;
 
     constructor() {
+        //this.proxy = `http://XKw9zD:GD6Xqv@193.187.144.248:8000`;
         this.proxy = main.randProxy();
     }
 
@@ -38,7 +39,7 @@ export default class query {
                 }
                 let jsdom = new JSDOM(res.body);
                 let sessId = (jsdom.window.document.getElementById('sessid') as HTMLInputElement).value;
-                let v3_token = await cBypass.v3(this.proxy, main.v3_key, this.uri);
+                let v3_token = await cBypass.v3(this.proxy, main.v3_key, this.uri + this.uriPlus + this.uriPlusPlus);
                 await this.stage2(sessId, v3_token);
             });
         } catch (err) {
@@ -55,10 +56,14 @@ export default class query {
                 sessid: session,
                 token: v3_key
             };
-            await request.post(this.uri + this.uriPlus, {
-                body: q
+            await request.post(this.uri + this.uriPlusPlus, {
+                body: JSON.stringify(q),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             }, async (err, res) => {
                 if (err) return reject(err);
+                console.log(res.body);
                 let resp = JSON.parse(res.body) as stagedResult;
                 if (resp.status == 'success') {
                     main.counter++
@@ -67,8 +72,11 @@ export default class query {
                     q.token_v3 = q.token;
                     q.token = await cBypass.v2(this.proxy, main.v2_key);
                     q.type = 'v2';
-                    request.post(this.uri + this.uriPlus, {
-                        body: q
+                    request.post(this.uri + this.uriPlusPlus, {
+                        body: JSON.stringify(q),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
                     }, (err, res) => {
                         if (err) return reject(err);
                         let resp = JSON.parse(res.body) as stagedResult;
