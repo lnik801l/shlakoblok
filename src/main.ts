@@ -6,6 +6,7 @@ import query from "./query";
 export default class main {
     public static v3_key = '6LeNiPAZAAAAAJv_GqhfZO642pc-L8ArG0wAK60I';
     public static v2_key = '6LdO1vEZAAAAALfvylmSJ80Sm2saW0Yov7sG1PhV';
+    public static counter = 0;
 
     public static proxyUrl(p: ProxyData): string {
         return `${p.https ? 'https://' : 'http://'}${p.ip}:${p.port}`;

@@ -12,6 +12,10 @@ interface stagedQuery {
     token_v3?: string
 }
 
+interface stagedResult {
+    status: 'success' | 'v2'
+}
+
 export default class query {
     private id = 2504061;
     private uri = 'https://russiantastes.ru/nominees/2504061';
@@ -53,9 +57,28 @@ export default class query {
             };
             await request.post(this.uri + this.uriPlus, {
                 body: q
-            }, (err, res) => {
+            }, async (err, res) => {
                 if (err) return reject(err);
-                console.log(res.body);
+                let resp = JSON.parse(res.body) as stagedResult;
+                if (resp.status == 'success') {
+                    main.counter++
+                    return resolve();
+                } else {
+                    q.token_v3 = q.token;
+                    q.token = await cBypass.v2(this.proxy, main.v2_key);
+                    q.type = 'v2';
+                    request.post(this.uri + this.uriPlus, {
+                        body: q
+                    }, (err, res) => {
+                        if (err) return reject(err);
+                        let resp = JSON.parse(res.body) as stagedResult;
+                        if (resp.status == 'success') {
+                            main.counter++
+                            return resolve();
+                        }
+                        return reject();
+                    });
+                }
                 return resolve();
             });
         });
